@@ -11,10 +11,10 @@ step "run-a-script-write-out-deployment-started" {
                 Writes out "Deployment Started"
                 Runs on all targets with the role "trident-web"
                 Deploys to all environments
-            EOT
+                EOT
         properties = {
             Octopus.Action.RunOnServer = "false"
-            Octopus.Action.Script.ScriptBody = "Write-Highlight \"Deployment Started\""
+            Octopus.Action.Script.ScriptBody = "Write-Highlight \"Deployment Started...\""
             Octopus.Action.Script.ScriptSource = "Inline"
             Octopus.Action.Script.Syntax = "PowerShell"
         }
@@ -44,7 +44,6 @@ step "run-octopus-deploy-runbook-create-trident-database" {
 
     action {
         properties = {
-            Octopus.Action.RunOnServer = "true"
             Octopus.Action.Template.Id = "ActionTemplates-3"
             Octopus.Action.Template.Version = "14"
             Run.Runbook.Api.Key = "#{Project.Runbook.Api.Key}"
@@ -76,7 +75,6 @@ step "generate-database-delta-report" {
     action {
         action_type = "Octopus.Script"
         properties = {
-            Octopus.Action.RunOnServer = "true"
             Octopus.Action.Script.ScriptBody = <<-EOT
                 $packagePath = $OctopusParameters["Octopus.Action.Package[Trident.Database].ExtractedPath"]
                 $connectionString = $OctopusParameters["Project.Connection.String"]
@@ -88,7 +86,7 @@ step "generate-database-delta-report" {
                 $generatedReport = "$reportPath\UpgradeReport.html"
                 
                 & $appToRun --ConnectionString="$connectionString" --PreviewReportPath="$reportPath"
-            EOT
+                EOT
             Octopus.Action.Script.ScriptSource = "Inline"
             Octopus.Action.Script.Syntax = "PowerShell"
         }
@@ -120,7 +118,6 @@ step "auto-approve-database-delta-script" {
             Databases.AutoApproval.ReportPath = "#{Project.Database.Report.Path}\\UpgradeReport.html"
             Databases.AutoApprove.CommandsIndicatingChange = "#{SQL.Verification.Change.List}"
             Databases.AutoApprove.CommandsRequireApproval = "#{SQL.Verification.Command.List}"
-            Octopus.Action.RunOnServer = "true"
             Octopus.Action.Template.Id = "ActionTemplates-4"
             Octopus.Action.Template.Version = "0"
         }
@@ -139,9 +136,9 @@ step "approve-database-delta-script" {
             Octopus.Action.Manual.BlockConcurrentDeployments = "False"
             Octopus.Action.Manual.Instructions = "Instructions have been provided"
             Octopus.Action.Manual.ResponsibleTeamIds = "db-admins,global/octopus-managers,global/octopus-administrators"
+            Octopus.Action.RunOnServer = "false"
         }
         tenant_tags = ["Branch Type/Pseudo"]
-        worker_pool_variable = ""
     }
 }
 
@@ -155,7 +152,6 @@ step "deploy-the-database-changes" {
     action {
         action_type = "Octopus.Script"
         properties = {
-            Octopus.Action.RunOnServer = "true"
             Octopus.Action.Script.ScriptBody = <<-EOT
                 $packagePath = $OctopusParameters["Octopus.Action.Package[Trident.Database].ExtractedPath"]
                 $connectionString = $OctopusParameters["Project.Connection.String"]
@@ -164,7 +160,7 @@ step "deploy-the-database-changes" {
                 $appToRun = ".\Octopus.Trident.Database.DbUp"
                 
                 & $appToRun --ConnectionString="$connectionString"
-            EOT
+                EOT
             Octopus.Action.Script.ScriptSource = "Inline"
             Octopus.Action.Script.Syntax = "PowerShell"
         }
@@ -198,6 +194,7 @@ step "deploy-a-package-trident-web" {
             Octopus.Action.Package.FeedId = "octopus-server-built-in"
             Octopus.Action.Package.JsonConfigurationVariablesTargets = "appSettings.json"
             Octopus.Action.Package.PackageId = "Trident.Web"
+            Octopus.Action.RunOnServer = "false"
         }
         worker_pool_variable = ""
 
@@ -218,7 +215,6 @@ step "verify-application" {
     action {
         action_type = "Octopus.Script"
         properties = {
-            Octopus.Action.RunOnServer = "true"
             Octopus.Action.Script.ScriptBody = <<-EOT
                 $randomNumber = Get-Random -Minimum 1 -Maximum 100
                 
@@ -228,7 +224,7 @@ step "verify-application" {
                 	Write-Highlight "An error occurred verifying the application."
                     exit 1
                 }
-            EOT
+                EOT
             Octopus.Action.Script.ScriptSource = "Inline"
             Octopus.Action.Script.Syntax = "PowerShell"
         }
@@ -241,7 +237,6 @@ step "invoke-runbook-update-load-balancer" {
 
     action {
         properties = {
-            Octopus.Action.RunOnServer = "true"
             Octopus.Action.Template.Id = "ActionTemplates-3"
             Octopus.Action.Template.Version = "14"
             Run.Runbook.Api.Key = "#{Project.Runbook.Api.Key}"
@@ -275,7 +270,7 @@ step "run-a-script-write-out-deployment-finished" {
                 Writes out "Deployment Started"
                 Runs on all targets with the role "trident-web"
                 Deploys to all environments
-            EOT
+                EOT
         properties = {
             Octopus.Action.RunOnServer = "false"
             Octopus.Action.Script.ScriptBody = "Write-Highlight \"Deployment Finished\""
@@ -296,8 +291,8 @@ step "send-an-email" {
             Octopus.Action.Email.Body = "You can view the the deployment here: #{Octopus.Web.ServerUri}/app#/#{Octopus.Space.Id}/tasks/#{Octopus.Task.Id}"
             Octopus.Action.Email.Subject = "#{Email.Subject.Code}"
             Octopus.Action.Email.ToTeamIds = "trident-notifications"
+            Octopus.Action.RunOnServer = "false"
         }
-        worker_pool_variable = ""
     }
 }
 
