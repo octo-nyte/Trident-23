@@ -14,7 +14,7 @@ step "run-a-script-write-out-deployment-started" {
                 EOT
         properties = {
             Octopus.Action.RunOnServer = "false"
-            Octopus.Action.Script.ScriptBody = "Write-Highlight \"Deployment Started...\""
+            Octopus.Action.Script.ScriptBody = "Write-Highlight \"Deployment Started\""
             Octopus.Action.Script.ScriptSource = "Inline"
             Octopus.Action.Script.Syntax = "PowerShell"
         }
