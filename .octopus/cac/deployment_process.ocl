@@ -14,7 +14,7 @@ step "run-a-script-write-out-deployment-started" {
                 EOT
         properties = {
             Octopus.Action.RunOnServer = "false"
-            Octopus.Action.Script.ScriptBody = "Write-Highlight \"Deployment Started\""
+            Octopus.Action.Script.ScriptBody = "Write-Highlight \"Deployment Started...\""
             Octopus.Action.Script.ScriptSource = "Inline"
             Octopus.Action.Script.Syntax = "PowerShell"
         }
@@ -139,7 +139,6 @@ step "approve-database-delta-script" {
             Octopus.Action.RunOnServer = "false"
         }
         tenant_tags = ["Branch Type/Pseudo"]
-        worker_pool_variable = ""
     }
 }
 
@@ -294,7 +293,6 @@ step "send-an-email" {
             Octopus.Action.Email.ToTeamIds = "trident-notifications"
             Octopus.Action.RunOnServer = "false"
         }
-        worker_pool_variable = ""
     }
 }
 
